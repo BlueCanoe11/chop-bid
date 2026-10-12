@@ -9,7 +9,7 @@ import { mkdirSync, writeFileSync, cpSync } from 'node:fs';
 import { loadLeague } from '../js/sleeper.js';
 import { computeAll, buildBrief, DEFAULT_PREFS } from '../js/engine.js';
 
-const env = (k, d) => (process.env[k] ?? d);
+const env = (k, d) => (process.env[k] ? process.env[k].trim() : d);
 const LEAGUE_ID = env('LEAGUE_ID');
 const ROSTER_ID = Number(env('ROSTER_ID'));
 const TOKEN = env('BRIEF_TOKEN');
