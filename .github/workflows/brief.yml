@@ -1,0 +1,47 @@
+name: Weekly bid brief
+
+# Eliminations post Monday ~9:40 PM PT and waivers run Wednesday ~12:13 AM PT, so refresh
+# right after the elimination and through Tuesday, plus once a day otherwise.
+# (Times are UTC: 05:10 Tue UTC = 10:10 PM Mon PDT / 9:10 PM PST.)
+on:
+  schedule:
+    - cron: '10 5,6,9,15,19,23 * * 2'
+    - cron: '10 2,4,6 * * 3'
+    - cron: '30 16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build brief
+        run: node scripts/brief.mjs
+        env:
+          LEAGUE_ID: ${{ secrets.LEAGUE_ID }}
+          ROSTER_ID: ${{ secrets.ROSTER_ID }}
+          BRIEF_TOKEN: ${{ secrets.BRIEF_TOKEN }}
+          OWNER_NAME: ${{ vars.OWNER_NAME }}
+          TIMEZONE: ${{ vars.TIMEZONE }}
+          SITE_URL: ${{ vars.SITE_URL }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - id: deploy
+        uses: actions/deploy-pages@v4

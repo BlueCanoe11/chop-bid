@@ -1,0 +1,8 @@
+{
+  "name": "chop-bid",
+  "private": true,
+  "type": "module",
+  "description": "FAAB bid optimizer for Sleeper chopped leagues",
+  "engines": { "node": ">=20" },
+  "scripts": { "brief": "node scripts/brief.mjs" }
+}

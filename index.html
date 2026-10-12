@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chop Bid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="brand" href="./"><span class="brand-mark" aria-hidden="true"></span><span>Chop<b>Bid</b></span></a>
+      <span class="appbar-meta" id="league-meta"></span>
+      <nav class="appbar-nav" id="pillnav" aria-label="Sections" hidden>
+        <a href="#plan">Plan</a><a href="#brief-sec">Instinct</a><a href="#board">Players</a><a href="#lineup-sec">Lineups</a><a href="#league">League</a><a href="#method-sec">Method</a>
+      </nav>
+      <div class="appbar-actions">
+        <button class="btn-text" id="btn-settings" type="button" hidden>Settings</button>
+        <button class="btn-text" id="btn-change" type="button" hidden>Change league</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="setup" id="setup">
+      <p class="eyebrow">Sleeper · Chopped leagues</p>
+      <h1>FAAB bid optimizer</h1>
+      <p class="lede">Reads your league from Sleeper, simulates the remaining season, models how each manager bids, and recommends a bid for every waiver player.</p>
+      <form id="setup-form" class="search">
+        <input id="setup-input" type="text" placeholder="Sleeper username or league ID" autocomplete="off" required aria-label="Sleeper username or league ID">
+        <button class="btn" type="submit">Find leagues</button>
+      </form>
+      <div id="setup-results"></div>
+    </section>
+
+    <div id="dash" hidden>
+      <section class="summary">
+        <p class="eyebrow" id="dash-eyebrow"></p>
+        <h1 id="dash-title"></h1>
+        <p class="lede" id="dash-lede"></p>
+        <div class="scenarios" id="scenarios" hidden></div>
+        <div class="info" id="notice" hidden></div>
+        <div class="metrics" id="kpis"></div>
+      </section>
+
+      <section class="block" id="plan">
+        <div class="block-head">
+          <div>
+            <h2>Bid plan</h2>
+            <p class="sub" id="plan-sub"></p>
+          </div>
+        </div>
+        <div class="plan-cards" id="plan-cards"></div>
+        <div class="plan-totals" id="plan-totals"></div>
+      </section>
+
+      <section class="block" id="brief-sec">
+        <div class="block-head">
+          <div>
+            <h2>Brief for Instinct</h2>
+            <p class="sub">Plain-text instructions an agent can follow: text you the plan, wait for your approval, then enter the claims in Sleeper. The scheduled job publishes this same brief.</p>
+          </div>
+        </div>
+        <div class="panel" id="brief"></div>
+      </section>
+
+      <section class="block" id="board">
+        <div class="block-head">
+          <div>
+            <h2>Bids by player</h2>
+            <p class="sub" id="targets-sub"></p>
+          </div>
+          <div class="controls">
+            <div class="seg" id="pos-filters" role="tablist" aria-label="Filter by position"></div>
+            <label class="check"><input type="checkbox" id="show-all"> Only lineup upgrades</label>
+            <button class="btn-sm" id="export-csv" type="button">Export CSV</button>
+          </div>
+        </div>
+        <div class="table-wrap"><table class="data sortable" id="targets"></table></div>
+        <p class="fine" id="targets-legend"></p>
+      </section>
+
+      <section class="block" id="detail" hidden></section>
+
+      <section class="block" id="lineup-sec">
+        <div class="block-head">
+          <div>
+            <h2>Lineups</h2>
+            <p class="sub">Your lineup as set in Sleeper, the model's optimal lineup, and the optimal lineup if every planned claim wins. Re-optimized for each week from that week's projections; any slot your roster can't fill above free-agent level is filled by a streamer at that week's replacement level.</p>
+          </div>
+        </div>
+        <h3 class="h3" id="lineup-now-title"></h3>
+        <div class="table-wrap"><table class="data" id="lineup-table"></table></div>
+        <h3 class="h3">Projected starting-lineup points by week</h3>
+        <div class="table-wrap"><table class="data" id="weeks-table"></table></div>
+      </section>
+
+      <section class="block" id="sim-sec" hidden>
+        <div class="block-head">
+          <div>
+            <h2>Simulation</h2>
+            <p class="sub" id="sim-sub"></p>
+          </div>
+        </div>
+        <div class="panels" id="sim-panels"></div>
+      </section>
+
+      <section class="block" id="league">
+        <div class="block-head"><div><h2>League</h2><p class="sub">Elimination odds against Sleeper's projections, budgets and bidding behavior, and the supply of future waiver players.</p></div></div>
+        <div class="panels">
+          <div class="panel wide" id="outlook-card"></div>
+          <div class="panel" id="live-card" hidden></div>
+          <div class="panel" id="risk-card"></div>
+          <div class="panel" id="budgets-card"></div>
+          <div class="panel" id="money-card"></div>
+        </div>
+      </section>
+
+      <section class="block method" id="method-sec">
+        <h2>Method</h2>
+        <ol id="method"></ol>
+      </section>
+    </div>
+
+    <div class="loading" id="loading" hidden><div class="spinner"></div><span id="loading-text">Loading…</span></div>
+  </main>
+
+  <dialog id="settings">
+    <form method="dialog" id="settings-form">
+      <h2>Model settings</h2>
+      <label>Your team <select id="set-team"></select></label>
+      <label>Objective
+        <select id="set-objective">
+          <option value="weeks">Expected weeks survived</option>
+          <option value="win">League win probability</option>
+        </select>
+      </label>
+      <label>Value of future money <span class="hint" id="thrift-label"></span>
+        <input type="range" id="set-thrift" min="-2" max="2" step="0.25" value="0">
+        <span class="range-ends"><span>Spend now</span><span>Save</span></span>
+      </label>
+      <label>Assume eliminated this week <select id="set-assume"></select></label>
+      <div class="two">
+        <label>Last elimination week <input type="number" id="set-lastweek" min="2" max="18" value="17"></label>
+        <label>Simulations <select id="set-sims"><option>3000</option><option selected>6000</option><option>10000</option></select></label>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn-sm" value="cancel" type="submit">Cancel</button>
+        <button class="btn" value="ok" type="submit" id="settings-apply">Apply</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

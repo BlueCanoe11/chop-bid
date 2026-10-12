@@ -1,0 +1,9 @@
+# Generated site
+public/
+# Local backtest harness and data (large, and tied to specific leagues)
+tools/
+# Local secrets / app state
+.brief-token
+.claude/
+.DS_Store
+.bin/
