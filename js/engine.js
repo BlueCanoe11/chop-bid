@@ -169,7 +169,7 @@ export function buildBrief(result, { owner = 'the team owner', dashboardUrl = ''
         winChance: Math.round(c.opt.p * 100) / 100,
         range: c.r.range ? [c.r.range.lo.skip ? 0 : c.r.range.lo.bid, c.r.range.hi.bid] : null,
         drop: d?.id ? b.season.players[d.id]?.name || d.id : null,
-        dropNote: d?.note || null,
+        dropNote: d?.id ? null : d?.note?.startsWith('open') ? d.note : `${owner} picks the drop (no bench player is safe to cut)`,
         role: roleLine(b.season, b.ls, c.r.role),
         fromEliminatedRoster: c.r.incoming,
       };

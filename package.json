@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "description": "FAAB bid optimizer for Sleeper chopped leagues",
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=22" },
   "scripts": { "brief": "node scripts/brief.mjs" }
 }
